@@ -1,33 +1,93 @@
-import { useState } from 'react'
+import axios from 'axios'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
+
+type Book = {
+  id: number,
+  author: string,
+  country: string,
+  imageLink: string,
+  language: string,
+  link: string,
+  pages: number,
+  title: string,
+  year: number
+}
+
+const defaultBooks: Book[] = [
+  {
+    "id": 1,
+    "author": "Chinua Achebe",
+    "country": "Nigeria",
+    "imageLink": "images/things-fall-apart.jpg",
+    "language": "English",
+    "link": "https://en.wikipedia.org/wiki/Things_Fall_Apart\n",
+    "pages": 209,
+    "title": "Things Fall Apart",
+    "year": 1958
+  },
+  {
+    "id": 2,
+    "author": "Hans Christian Andersen",
+    "country": "Denmark",
+    "imageLink": "images/fairy-tales.jpg",
+    "language": "Danish",
+    "link": "https://en.wikipedia.org/wiki/Fairy_Tales_Told_for_Children._First_Collection.\n",
+    "pages": 784,
+    "title": "Fairy tales",
+    "year": 1836
+  }]
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [books, setBooks] = useState<Book[]>(defaultBooks)
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    const apiUrl = 'http://localhost:5000/';
+    axios
+      .get(apiUrl)
+      .then((response) => {
+        setBooks(response.data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setError(error);
+        setIsLoading(false);
+      });
+  }, []);
 
   return (
     <>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
+        <a href="#" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
-        <a href="https://react.dev" target="_blank">
+        <a href="#" target="_blank">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>Book Store</h1>
+      <section>
+        <div>
+          {isLoading ? (
+            <p>Loading...</p>
+          ) : error ? (
+            <p>Error: {error.message}</p>
+          ) : (
+            books.map((book) => (
+              <div key={book.id} className='book-container'>
+                <h3>{book.id + '. ' +book.title}</h3>
+                <p>Written by {book.author}</p>
+                <p>Published in {book.year}</p>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
     </>
   )
 }
