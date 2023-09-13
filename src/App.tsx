@@ -47,7 +47,7 @@ function App() {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const apiUrl = 'http://localhost:5000/';
+    const apiUrl = 'http://10.25.31.106:5000/';
     axios
       .get(apiUrl)
       .then((response) => {
